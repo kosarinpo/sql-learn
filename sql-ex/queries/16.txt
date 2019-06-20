@@ -1,0 +1,20 @@
+Get pairs of PC models with identical speeds and the same RAM capacity. Each resulting pair should be displayed only once, i.e. (i, j) but not (j, i).
+Result set: model with the bigger number, model with the smaller number, speed, and RAM.
+
+SELECT DISTINCT
+    PC.model
+  , PC2.model
+  , PC.speed
+  , PC.ram
+FROM
+    PC
+    INNER JOIN
+        PC AS PC2
+        ON
+            (
+                PC.speed = PC2.speed
+                AND
+                PC.ram = PC2.ram
+                AND
+                PC.model > PC2.model
+            )

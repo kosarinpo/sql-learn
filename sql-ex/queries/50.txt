@@ -1,0 +1,15 @@
+Find the battles in which Kongo-class ships from the Ships table were engaged.
+SELECT DISTINCT
+    Outcomes.battle
+FROM
+    Outcomes
+WHERE
+    Outcomes.ship IN
+        (
+            SELECT
+                Ships.name
+            FROM
+                Ships
+            WHERE
+                Ships.class = 'Kongo'
+        )

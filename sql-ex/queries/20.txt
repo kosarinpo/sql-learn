@@ -1,0 +1,14 @@
+Find the makers producing at least three distinct models of PCs.
+Result set: maker, number of PC models.
+
+SELECT
+    Product.maker
+  , COUNT(Product.model)
+FROM
+    Product
+WHERE
+    Product.type = 'PC'
+GROUP BY
+    Product.maker
+HAVING
+    COUNT(Product.model) >= 3

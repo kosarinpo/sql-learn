@@ -1,0 +1,31 @@
+Find the makers of the cheapest color printers.
+Result set: maker, price.
+
+
+SELECT DISTINCT
+    Product.maker
+  , ModelFiltered.Price
+FROM
+    Product
+    INNER JOIN
+        (
+            SELECT
+                Printer.model
+              , Printer.price
+            FROM
+                Printer
+            WHERE
+                Printer.color = 'y'
+                AND
+                Printer.price =
+                    (
+                        SELECT
+                            MIN(Printer.price)
+                        FROM
+                            Printer
+                        WHERE
+                            Printer.color = 'y'
+                    )
+        ) AS ModelFiltered
+        ON
+            Product.model = ModelFiltered.model

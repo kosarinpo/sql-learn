@@ -1,0 +1,40 @@
+WITH
+    ModelsBMaker (model)
+AS
+    (
+        SELECT
+            Product.model
+        FROM
+            Product
+        WHERE
+            Product.maker = 'B'
+    )
+SELECT DISTINCT
+    PC.model
+  , PC.price
+FROM
+    PC
+    INNER JOIN ModelsBMaker
+        ON PC.model = ModelsBMaker.model
+WHERE PC.model IN (ModelsBMaker.model)
+UNION
+SELECT DISTINCT
+    Laptop.model
+  , Laptop.price
+FROM
+    Laptop
+    INNER JOIN ModelsBMaker
+        ON Laptop.model = ModelsBMaker.model
+WHERE Laptop.model IN (ModelsBMaker.model)
+UNION
+SELECT DISTINCT
+    Printer.model
+  , Printer.price
+FROM
+    Printer
+    INNER JOIN ModelsBMaker
+        ON Printer.model = ModelsBMaker.model
+WHERE Printer.model IN (ModelsBMaker.model)
+
+Get the models and prices for all commercially available products
+ (of any type) produced by maker B.

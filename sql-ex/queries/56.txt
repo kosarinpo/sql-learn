@@ -1,0 +1,30 @@
+For each class, find out the number of ships of this class
+that were sunk in battles.
+Result set: class, number of ships sunk.
+
+SELECT
+    Classes.class
+  , COUNT(ShipsSunk.ship)
+FROM
+    (
+        SELECT DISTINCT
+            Outcomes.ship
+        FROM
+            Outcomes
+        WHERE
+            Outcomes.result = 'sunk'
+    ) AS ShipsSunk
+    LEFT OUTER JOIN
+        Ships
+        ON
+            (
+                ShipsSunk.ship = Ships.name
+            )
+    RIGHT OUTER JOIN
+        Classes
+        ON
+            (
+                ISNULL(Ships.class, ShipsSunk.ship) = Classes.class
+            )
+GROUP BY
+    Classes.class

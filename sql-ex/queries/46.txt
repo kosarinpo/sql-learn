@@ -1,0 +1,30 @@
+For each ship that participated in the Battle of Guadalcanal, get its name, displacement, and the number of guns.
+
+
+SELECT
+    GuadalcanalShips.ship
+  , Classes.displacement
+  , Classes.numGuns
+FROM
+    (
+        SELECT
+            Outcomes.ship
+          , Ships.class
+        FROM
+            Outcomes
+            LEFT OUTER JOIN
+                Ships
+                ON
+                    (
+                        Outcomes.ship = Ships.name
+                    )
+        WHERE
+            Outcomes.battle LIKE 'Guadalcanal'
+
+    ) AS GuadalcanalShips
+    LEFT OUTER JOIN
+        Classes
+        ON
+            (
+                ISNULL(GuadalcanalShips.class, GuadalcanalShips.ship) = Classes.class
+            )

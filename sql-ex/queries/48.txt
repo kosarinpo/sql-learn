@@ -1,0 +1,54 @@
+Find the ship classes having at least one ship sunk in battles.
+SELECT
+    Classes.class
+FROM
+    Classes
+WHERE
+    Classes.class IN
+    (
+        SELECT
+            ISNULL(Ships.class, Outcomes.ship)
+        FROM
+            Outcomes
+            LEFT OUTER JOIN
+                Ships
+                ON
+                    (
+                        Outcomes.ship = Ships.name
+                    )
+        WHERE
+            Outcomes.result = 'sunk'
+    )
+
+SELECT
+    Classes.class
+FROM
+    Classes
+WHERE
+    Classes.class IN
+        (
+            SELECT
+                Outcomes.ship
+            FROM
+                Outcomes
+            WHERE
+                Outcomes.result = 'sunk'
+        )
+    OR
+    Classes.class IN
+        (
+            SELECT
+                Ships.class
+            FROM
+                Ships
+            WHERE
+                Ships.name IN
+                    (
+                        SELECT
+                            Outcomes.ship
+                        FROM
+                            Outcomes
+                        WHERE
+                            Outcomes.result = 'sunk'
+                    )
+        )

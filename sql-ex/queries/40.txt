@@ -1,0 +1,22 @@
+For the ships in the Ships table that have at least 10 guns, get the class, name, and country.
+
+SELECT
+    Ships.class
+  , Ships.name
+  , ClassesFiltered.country
+FROM
+    Ships
+    INNER JOIN
+        (
+            SELECT
+                Classes.class
+              , Classes.country
+            FROM
+                Classes
+            WHERE
+                Classes.numGuns >= 10
+        ) AS ClassesFiltered
+        ON
+            (
+                Ships.class = ClassesFiltered.class
+            )

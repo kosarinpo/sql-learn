@@ -1,0 +1,29 @@
+Get the laptop models that have a speed smaller than the speed of any PC.
+Result set: type, model, speed.
+
+SELECT DISTINCT
+    LaptopColumn.type
+  , Laptop.model
+  , Laptop.speed
+FROM
+    Laptop
+    CROSS JOIN
+        (
+            SELECT
+                Product.type
+            FROM
+                Product
+            WHERE
+                Product.type = 'Laptop'
+            GROUP BY Product.type
+        )
+        AS LaptopColumn
+
+WHERE
+    Laptop.speed < ALL
+        (
+            SELECT
+                PC.speed
+            FROM
+                PC
+        )

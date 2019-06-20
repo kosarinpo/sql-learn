@@ -1,0 +1,15 @@
+    Find countries that ever had classes of both battleships (‘bb’) and cruisers (‘bc’).
+
+SELECT
+    Classes.country
+FROM
+    Classes
+WHERE
+    Classes.type = 'bb'
+INTERSECT
+SELECT
+    Classes.country
+FROM
+    Classes
+WHERE
+    Classes.type = 'bc'

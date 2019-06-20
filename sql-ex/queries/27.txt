@@ -1,0 +1,59 @@
+Find out the average hard disk drive capacity of PCs produced by makers who also manufacture printers.
+Result set: maker, average HDD capacity.
+
+SELECT
+    Makers.maker
+  , AVG(PC.hd)
+FROM
+    PC
+    INNER JOIN
+        (
+            SELECT
+                Product.maker
+              , Product.model
+            FROM
+                Product
+            WHERE
+                Product.type = 'PC'
+                AND
+                Product.maker IN
+                    (
+                        SELECT
+                            Product.maker
+                        FROM
+                            Product
+                        WHERE
+                            Product.type = 'Printer'
+                    )
+        ) AS Makers
+        ON
+            PC.model = Makers.model
+GROUP BY
+    Makers.maker
+
+
+    SELECT
+        PR.maker
+      , AVG(PC.hd) AS Avg_hd
+    FROM
+        PC
+        JOIN
+            Product PR
+            ON
+                PR.model = PC.model
+    WHERE
+        PR.type = 'PC'
+        AND
+        PR.maker IN
+            (
+                SELECT
+                    PR1.maker
+                FROM
+                    Product PR1
+                GROUP BY
+                    PR1.Maker
+                  , PR1.type
+                HAVING
+                    PR1.type = 'Printer'
+            )
+    GROUP BY PR.maker

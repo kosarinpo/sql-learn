@@ -1,0 +1,36 @@
+With a precision of two decimal places, determine
+the average number of guns
+ for all battleships (including the ones in the Outcomes table).
+
+SELECT
+    CAST(AVG(Classes.numGuns * 1.0) AS NUMERIC(5,2))
+FROM
+    (
+        SELECT
+            Ships.name AS ship
+          , Ships.class AS class
+        FROM
+            Ships
+        UNION ALL
+        SELECT DISTINCT
+            Outcomes.ship AS ship
+          , Outcomes.ship AS class
+        FROM
+            Outcomes
+        WHERE
+            Outcomes.ship NOT IN
+                (
+                    SELECT
+                        Ships.name
+                    FROM
+                        Ships
+                )
+    ) AS AllShips
+    INNER JOIN
+        Classes
+        ON
+            (
+                AllShips.class = Classes.class
+            )
+WHERE
+    Classes.type = 'bb'

@@ -1,0 +1,14 @@
+Using Product table, find out the number of makers who produce only one model.
+SELECT
+    COUNT(Makers.maker)
+FROM
+    (
+        SELECT
+            Product.maker
+        FROM
+            Product
+        GROUP BY
+            Product.maker
+        HAVING
+            COUNT(Product.model) = 1
+    ) AS Makers

@@ -1,0 +1,82 @@
+Get the makers who produce only one product type and more than one model. Output: maker, type.
+WITH
+    MakersFiltered (maker)
+        AS
+        (
+            SELECT
+                MakerType.maker
+            FROM
+                (
+                    SELECT DISTINCT
+                        Product.maker
+                      , Product.type
+                    FROM Product
+                ) AS MakerType
+                INNER JOIN
+                    (
+                        SELECT
+                            MakerModel.maker
+                        FROM
+                            (
+                                SELECT DISTINCT
+                                    Product.maker
+                                  , Product.model
+                                FROM
+                                    Product
+                            ) AS MakerModel
+                        GROUP BY
+                            MakerModel.maker
+                        HAVING
+                            COUNT(MakerModel.model) > 1
+                    ) AS MakerFilteredModel ON MakerType.Maker = MakerFilteredModel.maker
+            GROUP BY
+                MakerType.maker
+            HAVING
+                COUNT(MakerType.type) = 1
+        )
+SELECT DISTINCT
+    Product.maker
+  , Product.type
+FROM
+    Product
+WHERE
+    Product.maker
+        IN
+        (
+            SELECT MakersFiltered.maker
+            FROM MakersFiltered
+        )
+
+
+SELECT DISTINCT
+    Product.maker
+  , MAX(Product.type)
+FROM
+    Product
+GROUP BY
+    Product.maker
+HAVING
+    COUNT(Product.model) > 1
+    AND
+    COUNT(DISTINCT Product.type) = 1
+
+SELECT DISTINCT
+    Product.maker
+  , Product.type
+FROM
+    Product
+WHERE
+    Product.maker
+        IN
+        (
+            SELECT
+                Product.maker
+            FROM
+                Product
+            GROUP BY
+                Product.maker
+            HAVING
+                COUNT(Product.model) > 1
+                AND
+                COUNT(DISTINCT Product.type) = 1
+        )

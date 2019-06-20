@@ -1,0 +1,9 @@
+Find the makers producing PCs but not laptops.
+
+SELECT Product.maker
+FROM Product
+WHERE Product.Type = 'PC'
+EXCEPT
+SELECT Product.maker
+FROM Product
+WHERE Product.Type = 'Laptop'

@@ -1,0 +1,103 @@
+For classes having irreparable combat losses and
+at least three ships in the database,
+display the name of the class and the number of ships sunk.
+
+WITH
+    AllShips AS
+        (
+            SELECT
+                Ships.name as ship
+              , Ships.class as class
+              , CASE
+                    WHEN
+                        Ships.name IN
+                            (
+                                SELECT
+                                    Outcomes.ship
+                                FROM
+                                    Outcomes
+                                WHERE
+                                    Outcomes.result = 'sunk'
+                            )
+                        THEN
+                            1
+                    ELSE
+                        0
+                END AS isSANK
+            FROM
+                Ships
+            UNION ALL
+            SELECT DISTINCT
+                Outcomes.ship as ship
+              , Outcomes.ship as class
+              , CASE
+                    WHEN
+                        Outcomes.ship IN
+                            (
+                                SELECT
+                                    Outcomes.ship
+                                FROM
+                                    Outcomes
+                                WHERE
+                                    Outcomes.result = 'sunk'
+                            )
+                        THEN
+                            1
+                    ELSE
+                        0
+                END AS isSANK
+            FROM
+                Outcomes
+        )
+SELECT
+    Classes.class
+  , SUM(AllShips.isSANK)
+FROM
+    AllShips
+    INNER JOIN
+        Classes
+            ON
+                (
+                    AllShips.class = Classes.class
+                )
+GROUP BY
+    Classes.class
+HAVING
+    COUNT(AllShips.ship) >= 3
+    AND
+    SUM(AllShips.isSANK) >= 1
+
+
+    SELECT
+        class, Count(distinct ship) Qty
+    FROM
+        Outcomes
+        JOIN Ships
+            ON
+                ship = name
+                OR
+                ship = class
+    Where
+        result = 'sunk'
+    GROUP By
+        class
+    Having
+        class IN
+            (
+                SELECT
+                    class
+                FROM
+                    Ships
+                GROUP By
+                    class
+                HAVING
+                    (Count(*)+
+                        (
+                            SELECT
+                                Count(distinct ship)
+                            FROM
+                                Outcomes
+                            Where
+                                ship=class
+                        )
+                    ) > 2)

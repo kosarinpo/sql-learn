@@ -1,0 +1,70 @@
+Find the PC makers with all personal computer models produced
+ by them being present in the PC table.
+
+SELECT DISTINCT
+    Product.maker
+FROM
+    Product
+WHERE
+    Product.type = 'PC'
+    AND
+    NOT EXISTS
+        (
+            SELECT
+                CopyProduct.model
+            FROM
+                Product AS CopyProduct
+            WHERE
+                CopyProduct.maker = Product.maker
+                AND
+                CopyProduct.type = 'PC'
+                AND
+                CopyProduct.model NOT IN
+                    (
+                        SELECT DISTINCT
+                            PC.model
+                        FROM
+                            PC
+                    )
+        )
+
+
+
+SELECT DISTINCT
+    Product.maker
+FROM
+    Product
+WHERE
+    Product.type = 'PC'
+EXCEPT
+SELECT DISTINCT
+    Product.maker
+FROM
+    Product
+WHERE
+    Product.type = 'PC'
+    AND
+    Product.model NOT IN
+        (
+            SELECT
+                PC.model
+            FROM
+                PC
+        )
+
+
+
+SELECT maker
+FROM
+(
+	SELECT maker, CASE WHEN model IN (SELECT model FROM PC) THEN 0	ELSE 1 END p
+	FROM
+	(
+		SELECT maker, model
+		FROM Product
+		WHERE type = 'PC'
+		GROUP BY maker, model
+	) P
+) C
+GROUP BY maker
+HAVING SUM(p) = 0

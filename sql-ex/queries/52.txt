@@ -1,0 +1,39 @@
+Determine the names of all ships in the Ships table
+that can be a Japanese battleship having at least nine main
+guns with a caliber of less than 19 inches and a displacement
+of not more than 65 000 tons.
+
+SELECT
+    Ships.name
+FROM
+    Ships
+WHERE
+    Ships.Class IN
+        (
+            SELECT
+                Classes.class
+            FROM
+                Classes
+            WHERE
+                Classes.country = 'Japan'
+                AND
+                Classes.type = 'bb'
+                AND
+                (
+                    Classes.numGuns IS NULL
+                    OR
+                    Classes.numGuns >= 9
+                )
+                AND
+                (
+                    Classes.bore IS NULL
+                    OR
+                    Classes.bore < 19
+                )
+                AND
+                (
+                    Classes.displacement IS NULL
+                    OR
+                    Classes.displacement <= 65000
+                )
+        )

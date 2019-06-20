@@ -1,0 +1,54 @@
+Number the rows of the Product table as follows: makers in descending order of number of models produced by them
+(for manufacturers producing an equal number of models, their names are sorted in ascending alphabetical order);
+model numbers in ascending order.
+Result set: row number as described above, manufacturer's name (maker), model.
+
+SELECT
+    GroupedMaker.numModels
+  , GroupedMaker.maker
+  , GroupedMaker.model
+
+FROM
+    (
+        SELECT
+            Product.maker
+          , Product.model
+          , COUNT(Product.model) AS numModels
+        FROM
+            Product
+            INNER JOIN
+                Product AS Product2
+                ON
+                    (
+                        Product.model <= Product2.model
+                        AND
+                        Product.maker = Product2.maker
+                    )
+        GROUP BY
+            Product.maker
+          , Product.model
+    ) AS GroupedMaker
+ORDER BY
+  GroupedMaker.numModels DESC
+
+
+
+
+
+  SELECT
+      Product.maker
+    , Product.model
+    , COUNT(Product.model) AS numModels
+  FROM
+      Product
+      INNER JOIN
+          Product AS Product2
+          ON
+              (
+                  Product.model <= Product2.model
+                  AND
+                  Product.maker = Product2.maker
+              )
+  GROUP BY
+      Product.maker
+    , Product.model

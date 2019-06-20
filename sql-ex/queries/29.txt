@@ -1,0 +1,34 @@
+Under the assumption that receipts of money (inc) and payouts (out)
+are registered not more than once a day for each collection point
+[i.e. the primary key consists of (point, date)], write a query displaying cash
+flow data (point, date, income, expense).
+Use Income_o and Outcome_o tables.
+SELECT
+    CASE
+        WHEN
+            Income_o.point is NULL
+            THEN
+                Outcome_o.point
+        ELSE
+            Income_o.point
+    END AS point
+  , CASE
+        WHEN
+            Income_o.date is NULL
+            THEN
+                Outcome_o.date
+        ELSE
+            Income_o.date
+    END
+  , Income_o.inc
+  , Outcome_o.out
+FROM
+    Income_o
+    FULL OUTER JOIN
+        Outcome_O
+        ON
+            (
+                Income_o.point = Outcome_o.point
+                AND
+                Income_o.date = Outcome_o.date
+            )

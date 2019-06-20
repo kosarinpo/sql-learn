@@ -1,0 +1,46 @@
+Under the assumption that receipts of money (inc) and payouts (out) can be registered any number of times a day
+for each collection point [i.e. the code column is the primary key], display a table with one corresponding row
+for each operating date of each collection point.
+Result set: point, date, total payout per day (out), total money intake per day (inc).
+Missing values are considered to be NULL.
+
+SELECT
+    UnionIncOut.point
+  , UnionIncOut.date
+  , CASE
+        WHEN
+            SUM(ISNULL(UnionIncOut.out, 0)) = 0
+            THEN
+                NULL
+        ELSE
+            SUM(ISNULL(UnionIncOut.out, 0))
+    END
+  , CASE
+        WHEN
+            SUM(ISNULL(UnionIncOut.inc, 0)) = 0
+            THEN
+                NULL
+        ELSE
+            SUM(ISNULL(UnionIncOut.inc, 0))
+    END
+FROM
+    (
+        SELECT
+            Income.point
+          , Income.date
+          , NULL AS out
+          , Income.inc
+        FROM
+            Income
+        UNION ALL
+        SELECT
+            Outcome.point
+          , Outcome.date
+          , Outcome.out
+          , NULL AS inc
+        FROM
+            Outcome
+    ) AS UnionIncOut
+GROUP BY
+    UnionIncOut.point
+  , UnionIncOut.date

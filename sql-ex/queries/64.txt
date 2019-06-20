@@ -1,0 +1,90 @@
+Using the Income and Outcome tables,
+ determine for each buy-back center the days when it
+ received funds but made no payments, and vice versa.
+Result set: point, date, type of operation (inc/out),
+sum of money per day.
+
+SELECT
+    Data.point
+  , Data.date
+  , CASE
+        WHEN
+            Data.inc IS NULL
+            THEN
+                'out'
+        ELSE
+            'inc'
+    END
+  , CASE
+        WHEN
+            Data.inc IS NULL
+            THEN
+                Data.out
+        ELSE
+            Data.inc
+    END
+FROM
+    (
+        SELECT
+            CASE
+                WHEN
+                    IncData.point IS NULL
+                    THEN
+                        OutData.point
+                ELSE
+                    IncData.point
+            END as point
+          , CASE
+                WHEN
+                    IncData.date IS NULL
+                    THEN
+                        OutData.date
+                ELSE
+                    IncData.date
+            END as date
+          , IncData.inc AS inc
+          , OutData.out AS out
+        FROM
+            (
+                SELECT
+                    Income.point as point
+                  , Income.date as date
+                  , SUM(Income.inc) AS inc
+                FROM
+                    Income
+                GROUP BY
+                    Income.point
+                  , Income.date
+            ) AS IncData
+            FULL OUTER JOIN
+                (
+                    SELECT
+                        Outcome.point as point
+                      , Outcome.date as date
+                      , SUM(Outcome.out) AS out
+                    FROM
+                        Outcome
+                    GROUP BY
+                        Outcome.point
+                      , Outcome.date
+                ) AS OutData
+                ON
+                    (
+                        IncData.point = OutData.point
+                        AND
+                        IncData.date = OutData.date
+                    )
+    ) AS Data
+WHERE
+    NOT
+        (
+            Data.inc IS NULL
+            AND
+            Data.out IS NULL
+        )
+    AND
+        (
+            DATA.inc IS NULL
+            OR
+            DATA.out IS NULL
+        )

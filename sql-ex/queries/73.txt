@@ -1,0 +1,42 @@
+For each country, determine the battles in which the ships of this country did not participate.
+Result set: country, battle.
+
+SELECT
+    Countries.country AS country
+  , Battles.name AS battle
+FROM
+    Battles
+    CROSS JOIN
+        (
+            SELECT
+                Classes.country AS country
+            FROM
+                Classes
+        ) as Countries
+EXCEPT
+SELECT DISTINCT
+    Classes.country AS country
+  , ShipsBattles.battle AS battle
+FROM
+    Classes
+    INNER JOIN
+        (
+            SELECT
+                CASE
+                    WHEN
+                        Ships.class IS NULL
+                        THEN
+                            Outcomes.ship
+                    ELSE
+                        Ships.class
+                END AS class
+              , Outcomes.battle as battle
+            FROM
+                Outcomes
+                LEFT OUTER JOIN
+                    Ships
+                    ON
+                        Outcomes.ship = Ships.name
+        ) AS ShipsBattles
+        ON
+            Classes.class = ShipsBattles.class

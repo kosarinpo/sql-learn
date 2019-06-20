@@ -1,0 +1,77 @@
+List the names of lead ships in the database (including the Outcomes table).
+
+WITH
+    ShipsUnion AS
+        (
+            SELECT
+                Ships.name AS name
+            FROM
+                Ships
+            WHERE
+                Ships.name LIKE Ships.class
+            UNION ALL
+            SELECT
+                Outcomes.ship AS name
+            FROM
+                Outcomes
+            WHERE
+                Outcomes.ship NOT IN
+                    (
+                        SELECT
+                            Ships.name
+                        FROM
+                            Ships
+                        WHERE
+                            Ships.name NOT LIKE Ships.class
+                    )
+        )
+SELECT DISTINCT
+    ShipsUnion.name
+FROM
+    Classes
+    INNER JOIN
+        ShipsUnion
+        ON
+            (
+                Classes.class = ShipsUnion.name
+            )
+
+SELECT
+    Ships.name
+FROM
+    Ships
+WHERE
+    Ships.name = Ships.class
+UNION
+(
+    SELECT DISTINCT
+        Outcomes.ship
+    FROM
+        Outcomes
+    INTERSECT
+    SELECT
+        Classes.class
+    FROM
+        Classes
+)
+
+SELECT
+    Classes.class AS name
+FROM
+    Classes
+WHERE
+    Classes.class IN
+        (
+            SELECT
+                Ships.name
+            FROM
+                Ships
+        )
+    OR
+    Classes.class IN
+        (
+            SELECT
+                Outcomes.ship
+            FROM
+                Outcomes
+        )

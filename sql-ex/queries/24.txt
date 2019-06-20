@@ -1,0 +1,58 @@
+List the models of any type having the highest price of all products present in the database.
+WITH
+    DiffModels AS
+        (
+            SELECT
+                PC.model
+              , PC.price
+            FROM
+                PC
+            WHERE
+                PC.price =
+                    (
+                        SELECT
+                            MAX(PC.price)
+                        FROM
+                            PC
+                    )
+            UNION ALL
+            SELECT
+                Laptop.model
+              , Laptop.price
+             FROM
+                Laptop
+            WHERE
+                Laptop.price =
+                    (
+                        SELECT
+                            MAX(Laptop.price)
+                        FROM
+                            Laptop
+                    )
+            UNION ALL
+            SELECT
+                Printer.model
+              , Printer.price
+            FROM
+                Printer
+            WHERE
+                Printer.price =
+                    (
+                        SELECT
+                            MAX(Printer.price)
+                        FROM
+                            Printer
+                    )
+        )
+SELECT DISTINCT
+    DiffModels.model
+FROM
+    DiffModels
+WHERE
+    DiffModels.price =
+        (
+            SELECT
+                MAX(DiffModels.price)
+            FROM
+                DiffModels
+        )

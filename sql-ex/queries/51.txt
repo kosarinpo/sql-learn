@@ -1,0 +1,146 @@
+Find the names of the ships with the largest number of guns among all ships having the same displacement (including ships in the Outcomes table).
+WITH
+    ShipsClasses AS
+        (
+            SELECT
+                *
+            FROM
+                (
+                    SELECT
+                        Ships.name AS ship
+                      , Ships.class AS shipclass
+                    FROM
+                        Ships
+                    UNION ALL
+                    SELECT DISTINCT
+                        Outcomes.ship AS ship
+                      , Outcomes.ship AS shipclass
+                    FROM
+                        Outcomes
+                    WHERE
+                        Outcomes.ship NOT IN
+                            (
+                                SELECT
+                                    Ships.name
+                                FROM
+                                    Ships
+                            )
+                ) AS AllShips
+                INNER JOIN
+                    Classes
+                    ON
+                        (
+                            Allships.shipclass = Classes.class
+                        )
+        )
+SELECT
+    ShipsClasses.ship
+FROM
+    ShipsClasses
+WHERE
+    EXISTS
+        (
+            SELECT
+                CopyShipsClasses.displacement
+            FROM
+                Shipsclasses AS CopyShipsClasses
+            GROUP BY
+                CopyShipsClasses.displacement
+            HAVING
+                CopyShipsClasses.displacement = ShipsClasses.displacement
+                AND
+                MAX(CopyShipsClasses.numGuns) = ShipsClasses.numGuns
+        )
+
+
+WITH
+    sh AS
+        (
+            SELECT
+                name, class
+            FROM
+                Ships
+            UNION ALL
+            SELECT DISTINCT
+                ship, ship
+            FROM Outcomes
+        )
+SELECT
+    Name
+FROM
+    Sh
+    JOIN
+        Classes C
+        ON
+            Sh.class=C.class
+WHERE
+    C.numGUNS > = ALL
+        (
+            SELECT
+                NumGUNS
+            from
+                Classes c1
+            WHERE
+                C1.displacement=C.displacement
+                AND
+                c1.class in
+                    (
+                        SELECT
+                            class
+                        from
+                            sh
+                    )
+        )
+
+
+WITH
+    AllShips AS
+    (
+        SELECT
+            Ships.name AS ship
+          , Ships.class AS shipclass
+        FROM
+            Ships
+        UNION ALL
+        SELECT DISTINCT
+            Outcomes.ship AS ship
+          , Outcomes.ship AS shipclass
+        FROM
+            Outcomes
+        WHERE
+            Outcomes.ship NOT IN
+                (
+                    SELECT
+                        Ships.name
+                    FROM
+                        Ships
+                )
+    )
+SELECT
+    AllShips.ship
+FROM
+    AllShips
+    INNER JOIN
+        Classes
+        ON
+            (
+                AllShips.shipclass = Classes.class
+            )
+WHERE
+    Classes.numGuns >= ALL
+        (
+            SELECT
+                CopyClasses.numGuns
+            FROM
+                Classes AS CopyClasses
+            WHERE
+                CopyClasses.displacement = Classes.displacement
+                AND
+                CopyClasses.class IN
+                    (
+                        SELECT
+                            AllShips.shipclass
+                        FROM
+                            AllShips
+                    )
+        )

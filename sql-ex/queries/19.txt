@@ -1,0 +1,34 @@
+For each maker having models in the Laptop table, find out the average screen size of the laptops he produces.
+Result set: maker, average screen size.
+
+SELECT DISTINCT
+    MakerModel.maker
+  , AVG(Laptop.screen)
+FROM
+    Laptop
+    INNER JOIN
+        (
+            SELECT
+                Product.maker
+              , Product.model
+            FROM
+                Product
+            WHERE
+                Product.type = 'Laptop'
+        ) AS MakerModel
+        ON
+            Laptop.model = MakerModel.model
+GROUP BY
+    MakerModel.maker
+
+SELECT
+    Product.maker
+  , AVG(Laptop.screen)
+FROM
+    Laptop
+    INNER JOIN
+        Product
+        ON
+            Laptop.model = Product.model
+GROUP BY
+    Product.maker

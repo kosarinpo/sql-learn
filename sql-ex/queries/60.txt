@@ -1,0 +1,29 @@
+For the database with money transactions being recorded
+not more than once a day, calculate the cash balance of each
+ buy-back center at the beginning of 4/15/2001.
+Note: exclude centers not having any records before the specified date.
+Result set: point, balance
+
+SELECT
+    Data.point
+  , SUM(Data.inc)
+FROM
+    (
+        SELECT
+            Income_o.point
+          , Income_o.date
+          , Income_o.inc
+        FROM
+            Income_o
+        UNION ALL
+        SELECT
+            Outcome_o.point
+          , Outcome_o.date
+          , (-1)*Outcome_o.out AS inc
+        FROM
+            Outcome_o
+    ) AS Data
+WHERE
+    Data.date < '2001-04-15'
+GROUP BY
+    Data.point

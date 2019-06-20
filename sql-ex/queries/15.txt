@@ -1,0 +1,11 @@
+Get hard drive capacities that are identical for two or more PCs.
+Result set: hd.
+
+SELECT 
+    PC.hd
+FROM
+    PC
+GROUP BY
+    PC.hd
+HAVING
+    COUNT(PC.model) >= 2

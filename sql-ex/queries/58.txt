@@ -1,0 +1,45 @@
+For each product type and maker in the Product table, find out,
+ with a precision of two decimal places, the percentage ratio of
+  the number of models of the actual type produced by the actual
+   maker to the total number of models by this maker.
+Result set: maker, product type, the percentage ratio mentioned above.
+
+WITH
+    GroupedMakers AS
+        (
+            SELECT
+                Product.maker AS maker
+              , COUNT(Product.model) AS CountMakerModels
+            FROM
+                Product
+            GROUP BY
+                Product.maker
+        )
+  , GroupedTypesMakers AS
+        (
+            SELECT
+                Product.maker AS maker
+              , Product.type AS type
+              , COUNT(Product.model) AS CountTypeModels
+            FROM
+                Product
+            GROUP BY
+                Product.maker
+              , Product.type
+        )
+SELECT
+    GroupedTypesMakers.maker
+  , GroupedMakers.maker
+  , GroupedMakers.CountMakerModels
+  , GroupedTypesMakers.type
+  , GroupedTypesMakers.CountTypeModels
+  , CAST((CountTypeModels * 1.0) / CountMakerModels * 100 AS NUMERIC(4,2))
+
+FROM
+    GroupedMakers
+    INNER JOIN
+        GroupedTypesMakers
+        ON
+            (
+                GroupedMakers.maker = GroupedTypesMakers.maker
+            )

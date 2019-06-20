@@ -1,0 +1,10 @@
+Get the ships sunk in the North Atlantic battle.
+Result set: ship.
+SELECT
+    Outcomes.ship
+FROM
+    Outcomes
+WHERE
+    Outcomes.battle = 'North Atlantic'
+    AND
+    Outcomes.result = 'sunk'

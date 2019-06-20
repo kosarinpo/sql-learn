@@ -1,0 +1,62 @@
+Find the ships that `survived for future battles`; that is, after being damaged in a battle, they participated in another one, which occurred later.
+
+WITH
+    BattleResults AS
+        (
+            SELECT
+                Outcomes.ship
+              , Outcomes.result
+              , Battles.date
+            FROM
+                Outcomes
+                INNER JOIN
+                    Battles
+                    ON
+                        (
+                            Outcomes.battle = Battles.name
+                        )
+        )
+SELECT DISTINCT
+    BattleResults.ship
+FROM
+    BattleResults
+WHERE
+    BattleResults.result = 'damaged'
+    AND
+    EXISTS
+        (
+            SELECT
+                CopyBattleResults.ship
+            FROM
+                BattleResults AS CopyBattleResults
+            WHERE
+                CopyBattleResults.ship = BattleResults.ship
+                AND
+                CopyBattleResults.date > BattleResults.date
+        )
+
+
+SELECT
+    Outcomes.ship
+FROM
+    Outcomes
+    INNER JOIN
+        Battles
+        ON
+            (
+                Outcomes.battle = Battles.name
+            )
+GROUP BY
+    Outcomes.ship
+HAVING
+    MIN
+        (
+            CASE
+                WHEN
+                    Outcomes.result = 'damaged'
+                    THEN
+                        Battles.date
+                ELSE
+                    NULL
+            END
+        ) < MAX(Battles.date)

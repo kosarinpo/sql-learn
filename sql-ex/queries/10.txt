@@ -1,0 +1,15 @@
+Find the printer models having the highest price. Result set: model, price.
+
+SELECT DISTINCT
+    Printer.model
+  , Printer.price
+FROM
+    Printer
+WHERE
+    Printer.Price =
+        (
+            SELECT
+                MAX(Printer.price)
+            FROM
+                Printer
+        )

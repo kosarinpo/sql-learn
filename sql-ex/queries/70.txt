@@ -1,0 +1,31 @@
+Get the battles in which at
+least three ships from the same country took part.
+
+
+SELECT DISTINCT
+    OutcomesClasses.battle
+FROM
+    Classes
+    INNER JOIN
+        (
+            SELECT
+                Outcomes.battle
+              , ISNULL(Ships.class, Outcomes.ship) AS class
+            FROM
+                Outcomes
+                LEFT OUTER JOIN
+                    Ships
+                    ON
+                        (
+                            Outcomes.ship = Ships.name
+                        )
+        ) AS OutcomesClasses
+        ON
+            (
+                Classes.class = OutcomesClasses.class
+            )
+GROUP BY
+    Classes.country
+  , OutcomesClasses.battle
+HAVING
+    COUNT(OutcomesClasses.class) >= 3

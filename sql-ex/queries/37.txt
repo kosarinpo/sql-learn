@@ -1,0 +1,29 @@
+Find classes for which only one ship exists in the database (including the Outcomes table).
+
+
+SELECT
+    Classes.class
+FROM
+    Classes
+    INNER JOIN
+            (
+                SELECT
+                    Ships.name AS name
+                  , Ships.class AS class
+                FROM
+                    Ships
+                UNION
+                SELECT DISTINCT
+                    Outcomes.ship AS name
+                  , Outcomes.ship AS class
+                FROM
+                    Outcomes
+            ) AS UnionShips
+            ON
+                (
+                    Classes.class = UnionShips.class
+                )
+GROUP BY
+    class
+HAVING
+    COUNT(UnionShips.name) = 1

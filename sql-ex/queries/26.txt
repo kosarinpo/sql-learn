@@ -1,0 +1,69 @@
+Find out the average price of PCs and laptops produced by maker A.
+Result set: one overall average price for all items.
+
+WITH
+    MakerAPCsLaptops AS
+        (
+            SELECT
+                Product.model
+            FROM
+                Product
+            WHERE
+                Product.maker = 'A'
+                AND
+                Product.type IN ('PC', 'Laptop')
+        )
+SELECT
+    SUM(Averages.SUMPrice) / SUM(Averages.COUNTPrice)
+FROM
+    (
+        SELECT
+            SUM(PC.price) AS SUMPrice
+          , COUNT(PC.price) AS COUNTPrice
+        FROM
+            PC
+            INNER JOIN
+                MakerAPCsLaptops
+                ON
+                    PC.model = MakerAPCsLaptops.model
+        UNION
+        SELECT
+            SUM(Laptop.price) AS SUMPrice
+          , COUNT(Laptop.price) AS COUNTPrice
+        FROM
+            Laptop
+            INNER JOIN
+                MakerAPCsLaptops
+                ON
+                    Laptop.model = MakerAPCsLaptops.model
+    ) AS Averages
+
+
+
+WITH
+    PCLaptopModels AS
+        (
+            SELECT
+                PC.model
+              , PC.price
+            FROM
+                PC
+            UNION ALL
+            SELECT
+                Laptop.model
+              , Laptop.price
+            FROM
+                Laptop
+        )
+SELECT
+    AVG(PCLaptopModels.price)
+FROM
+    Product
+    INNER JOIN
+        PCLaptopModels
+        ON
+            (
+                Product.model = PCLaptopModels.model
+            )
+WHERE
+    Product.maker = 'A'

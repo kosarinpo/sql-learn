@@ -1,0 +1,30 @@
+Get the battles that occurred in years when no ships were launched into water.
+SELECT
+    Battles.name
+FROM
+    Battles
+WHERE
+    DATEPART(year, Battles.date) NOT IN
+        (
+            SELECT DISTINCT
+                Ships.launched
+            FROM
+                Ships
+            WHERE
+                Ships.launched IS NOT NULL
+        )
+
+SELECT
+    Battles.name
+FROM
+    Battles
+WHERE
+    NOT EXISTS
+        (
+            SELECT
+                Ships.launched
+            FROM
+                Ships
+            WHERE
+                Ships.launched = DATEPART(yy, Battles.date)
+        )

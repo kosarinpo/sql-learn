@@ -1,0 +1,42 @@
+Get the makers producing both PCs having a speed of 750 MHz or higher and laptops with a speed of 750 MHz or higher.
+Result set: maker
+
+SELECT
+    Product.maker
+FROM
+    Product
+    INNER JOIN
+        (
+            SELECT
+                PC.model
+            FROM
+                PC
+            WHERE
+                PC.speed >= 750
+        ) AS PCModels
+        ON
+            (
+                Product.type = 'PC'
+                AND
+                Product.model = PCModels.model
+            )
+INTERSECT
+SELECT
+    Product.maker
+FROM
+    Product
+    INNER JOIN
+        (
+            SELECT
+                Laptop.model
+            FROM
+                Laptop
+            WHERE
+                Laptop.speed >= 750
+        ) AS LaptopModels
+        ON
+            (
+                Product.type = 'Laptop'
+                AND
+                Product.model = LaptopModels.model
+            )
